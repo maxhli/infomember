@@ -8,18 +8,18 @@
   <div class="jumbotron text-center">
       <div class="container">
           <a href="/" class="lang-logo">
-              <img src="/static/lang-logo.png">
+              <img src="/static/Full_Chinese.jpg">
           </a>
-          <h1>Basic Information for Members.</h1>
-          <p>In addition to text information, a picture is allowed.</p>
+          <h1>Basic Information for members</h1>
+          <p>In addition to text information, a picture is allowed</p>
       </div>
   </div>
 
 
 
-  <div class="container">
+  <div class="container-fluid">
 <div class="text-center" style="padding-bottom: 10px">
-      <a class="btn btn-success" href="/books/create">Create a new member</a>
+      <a class="btn btn-success" href="/members/create">Add a New Member</a>
 </div>
 
   <table class="table table-responsive table-striped
@@ -28,19 +28,25 @@
       <thead>
       <tr >
           <th class="text-center">
-              ISBN
+              ID
           </th>
           <th class="text-center">
-              Title
+              中文名字/Chinese Name
           </th>
           <th class="text-center">
-              Author
+              English Name
           </th>
           <th class="text-center">
-              Price
+              Email
           </th>
           <th class="text-center">
-              Picture URL
+              Cell Phone
+          </th>
+          <th class="text-center">
+              Small Picture
+          </th>
+          <th class="text-center">
+              Full Size Picture
           </th>
           <th class="text-center">
               Actions
@@ -52,36 +58,42 @@
       {{range .}}
     <tr>
       <td>
-        {{.Isbn}}
+        {{.ID}}
       </td>
       <td>
-        {{.Title}}
+        {{.ChineseName}}
       </td>
       <td>
-        {{.Author}}
-      </td>
-      <td>
-        {{.Price}}
+        {{.EnglishName}}
       </td>
         <td>
-        {{.PictureURL}}
+        {{.Email}}
         </td>
-
-
+        <td>
+        {{.CellPhone}}
+        </td>
+        <td>
+            <img src="{{.PictureURL}}" width="150px" />
+        </td>
+        <td>
+            <a href="{{.PictureURL}}" target="_blank">
+            {{.PictureURL}}
+            </a>
+        </td>
         <td class="text-center">
             <a class ="btn btn-primary"
-               href="/books/select/{{.Isbn}}">
+               href="/members/select/{{.ID}}">
                 <i class="icon-lg ion-more"
                    title="More...">
                 </i></a>
             <a class ="btn btn-warning"
-               href="/books/update/{{.Isbn}}">
+               href="/members/update/{{.ID}}">
                 <i class="icon-lg ion-edit"
                    title="Edit">
                 </i>
             </a>
             <a class ="btn btn-danger"
-               href="/books/delete/{{.Isbn}}">
+               href="/members/delete/{{.ID}}">
                 <i class="icon-lg ion-close-round"
                    title="Delete">
                 </i>

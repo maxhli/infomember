@@ -1,0 +1,168 @@
+
+
+
+
+<head>
+    <title>Details about the member</title>
+
+    <meta name="keywords" content=
+            "new password manager, hint, password hint, password, username, website name, password manager"
+    />
+    <meta name="description" content=
+            "Free Password Manager based on hints. No math encryption, just human encryption">
+
+
+
+    <link rel="icon" type="image/x-icon"
+          href="/static/images/drawing-svg-i-hate-passwordv4.ico" />
+
+    <link href="/static/bootstrap3.3.6/css/bootstrap.min.css"
+          rel="stylesheet" media="screen">
+    <link href="/static/css/site.css"
+          rel="stylesheet" media="screen">
+    <link rel="stylesheet"
+          href=
+                  "//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    >
+
+
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div>
+                <h3 class="text-center">Use this form to view the detail of a member.
+                    Clicking on "Back to the list" does not update anything.</h3>
+            </div>
+                <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_ID"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                ID:</label>
+        </span>
+                    <input id="id_ID" maxlength="254"
+                           name="ID" type="text" value="{{.ID}}" readonly/>
+                    <span class="helptext">ID</span>
+                </div>
+
+
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_ChineseName"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                ChineseName:</label>
+        </span>
+                    <input id="id_ChineseName" maxlength="255"
+                           name="ChineseName" type="text" value="{{.ChineseName}}" readonly/>
+                    <span class="helptext">ChineseName
+        </span>
+                </div>
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_EnglishName"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                EnglishName:</label>
+        </span>
+                    <input id="id_EnglishName" maxlength="255"
+                           name="EnglishName" type="text" value="{{.EnglishName}}" readonly />
+                    <span class="helptext">EnglishName</span>
+                </div>
+
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_Email"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                Email:</label>
+        </span>
+                <input id="id_Email" maxlength="255"
+                       name="Email" type="text" value="{{.Email}}" readonly />
+                <span class="helptext">Email</span>
+            </div>
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_CellPhone"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                Cell Phone:</label>
+        </span>
+                <input id="id_CellPhone" maxlength="255"
+                       name="CellPhone" type="text" value="{{.CellPhone}}" readonly />
+                <span class="helptext">Cell Phone</span>
+            </div>
+
+
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_Street"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                Street:</label>
+        </span>
+                <input id="id_Street" maxlength="255"
+                       name="Street" type="text" value="{{.Street}}" readonly />
+                <span class="helptext">Street</span>
+            </div>
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_City"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                City:</label>
+        </span>
+                <input id="id_City" maxlength="255"
+                       name="City" type="text" value="{{.City}}" readonly />
+                <span class="helptext">City</span>
+            </div>
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_State"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                State:</label>
+        </span>
+                <input id="id_State" maxlength="255"
+                       name="State" type="text" value="{{.State}}" readonly />
+                <span class="helptext">State</span>
+            </div>
+            <div style="padding-bottom: 10px">
+
+        <span class="right20percent">
+            <label for="id_Zip"
+                   style="display: inline-block; width: 140px; text-align: right;">
+                Zip:</label>
+        </span>
+                <input id="id_Zip" maxlength="255"
+                       name="Zip" type="text" value="{{.Zip}}" readonly />
+                <span class="helptext">Zip</span>
+            </div>
+
+            <div style="padding-bottom: 10px">
+        <span class="right20percent">
+            <a class="text-center btn btn-primary"
+               href="/">
+                Back to the main page</a>
+        </span>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+</div>
+
+<script src="/static/bootstrap3.3.6/js/jquery-2.2.4.min.js">
+</script>
+<script src="/static/bootstrap3.3.6/js/bootstrap.min.js">
+</script>
+
+</body>

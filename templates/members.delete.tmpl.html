@@ -34,9 +34,9 @@
             <div>
                 <h3 class="text-center">Are you sure that you want to delete?</h3>
             </div>
-            <form action="/books/delete/{{.Isbn}}" method="post">
+            <form action="/members/delete/{{.ID}}" method="post">
 
-                <input type="hidden"  name = "Isbn" value="{{.Isbn}}"/>
+                <input type="hidden"  name = "ID" value="{{.ID}}"/>
 
 
                 <div>

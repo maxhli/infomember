@@ -1,0 +1,156 @@
+
+
+
+
+<head>
+    <title></title>
+
+    <meta name="keywords" content=
+            "SQL, Golang, HTML, CSS, Heroku"
+    />
+    <meta name="description" content=
+            "member management">
+
+
+
+    <link rel="icon" type="image/x-icon"
+          href="/static/images/drawing-svg-i-hate-passwordv4.ico" />
+
+    <link href="/static/bootstrap3.3.6/css/bootstrap.min.css"
+          rel="stylesheet" media="screen">
+    <link href="/static/css/site.css"
+          rel="stylesheet" media="screen">
+    <link rel="stylesheet"
+          href=
+                  "//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    >
+
+
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div>
+                <h3 class="text-center">Use this form to update a member.
+                    Clicking on "Back to the list" does not update anything.</h3>
+            </div>
+            <form action="/members/update/{{.ID}}" method="post">
+                <div>
+
+        <span class="right20percent">
+            <label for="id_ID">ID:</label>
+        </span>
+                    <input id="id_ID" maxlength="254"
+                           name="ID" type="text" value="{{ .ID }}" disabled readonly/>
+                    <span class="helptext">ID number is readonly.</span>
+                </div>
+                <div>
+
+        <span class="right20percent">
+             <label for="id_ChineseName">中文名字:</label>
+        </span>
+                    <input id="id_ChineseName" maxlength="255"
+                           name="ChineseName" type="text" value="{{ .ChineseName }}" />
+                    <span class="helptext">中文名字
+        </span>
+                </div>
+
+                <div>
+
+        <span class="right20percent">
+            <label for="id_EnglishName">English Name:</label>
+        </span>
+                    <input id="id_EnglishName" maxlength="255"
+                           name="EnglishName" type="text" value="{{.EnglishName}}" />
+                    <span class="helptext">English Name</span>
+                </div>
+
+                <div>
+        <span class="right20percent">
+            <label for="id_Email">Email:</label>
+        </span>
+                    <input id="id_Email" maxlength="255"
+                           name="Email" type="text" value="{{.Email}}" />
+                    <span class="helptext">Email</span>
+                </div>
+
+                <div>
+        <span class="right20percent">
+            <label for="id_CellPhone">Cell Phone:</label>
+        </span>
+                    <input id="id_CellPhone" maxlength="255"
+                           name="CellPhone" type="text" value="{{.CellPhone}}" />
+                    <span class="helptext">Cell Phone</span>
+                </div>
+
+                <div>
+        <span class="right20percent">
+            <label for="id_Street">Street:</label>
+        </span>
+                    <input id="id_Street" maxlength="255"
+                           name="Street" type="text" value="{{.Street}}" />
+                    <span class="helptext">Street</span>
+                </div>
+
+                <div>
+        <span class="right20percent">
+            <label for="id_City">City:</label>
+        </span>
+                    <input id="id_City" maxlength="255"
+                           name="City" type="text" value="{{.City}}" />
+                    <span class="helptext">City</span>
+                </div>
+
+
+                <div>
+        <span class="right20percent">
+            <label for="id_State">State:</label>
+        </span>
+                    <input id="id_State" maxlength="255"
+                           name="State" type="text" value="{{.State}}" />
+                    <span class="helptext">State</span>
+                </div>
+
+                <div>
+        <span class="right20percent">
+            <label for="id_Zip">Zip:</label>
+        </span>
+                    <input id="id_Zip" maxlength="255"
+                           name="Zip" type="text" value="{{.Zip}}" />
+                    <span class="helptext">Zip</span>
+                </div>
+
+
+                <div>
+        <span class="right20percent">
+            <input type="submit" value="Save" />
+        </span>
+                </div>
+
+            </form>
+
+            <div>
+        <span class="right20percent">
+            <a class="text-center btn btn-primary"
+               href="/">
+                Back to the main page</a>
+        </span>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+</div>
+
+<script src="/static/bootstrap3.3.6/js/jquery-2.2.4.min.js">
+</script>
+<script src="/static/bootstrap3.3.6/js/bootstrap.min.js">
+</script>
+
+</body>

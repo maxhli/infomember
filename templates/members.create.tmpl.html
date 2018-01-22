@@ -1,0 +1,182 @@
+
+
+
+
+<head>
+    <title>Create a new member</title>
+
+    <meta name="keywords" content=
+            "new password manager, hint, password hint, password, username, website name, password manager"
+    />
+    <meta name="description" content=
+            "Free Password Manager based on hints. No math encryption, just human encryption">
+
+
+
+    <link rel="icon" type="image/x-icon"
+          href="/static/images/drawing-svg-i-hate-passwordv4.ico" />
+
+    <link href="/static/bootstrap3.3.6/css/bootstrap.min.css"
+          rel="stylesheet" media="screen">
+    <link href="/static/site.css"
+          rel="stylesheet" media="screen">
+
+    <link href="/static/main.css"
+          rel="stylesheet" media="screen">
+
+
+    <link rel="stylesheet"
+          href=
+                  "//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    >
+
+
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div>
+                <h3 class="text-center">Use this form to Create a member.
+                    Clicking on "Back to the list" does not create anything.</h3>
+            </div>
+            <form action="/members/create"
+                  method="post"
+                  enctype='multipart/form-data'>
+
+                <div style="margin-top:10px">
+
+        <span class="right20percent">
+            <label for="id_ID" class="floating-box">ID:</label>
+        </span>
+                    <input id="id_ID" maxlength="254"
+                           name="ID" type="text" value="Automatically Generated" disabled readonly/>
+                    <span class="helptext">ID</span>
+                </div>
+                <div style="margin-top:10px">
+
+        <span class="right20percent">
+             <label for="id_ChineseName" class="floating-box">中文名字:</label>
+        </span>
+                    <input id="id_ChineseName" maxlength="255"
+                           name="ChineseName" type="text" value="" />
+                    <span class="helptext">中文名字
+        </span>
+                </div>
+
+
+                <div style="margin-top:10px">
+
+        <span class="right20percent">
+            <label for="id_EnglishName" class="floating-box">EnglishName:</label>
+        </span>
+                    <input id="id_EnglishName" maxlength="255"
+                           name="EnglishName" type="text" value="" />
+                    <span class="helptext">EnglishName        </span>
+                </div>
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <label for="id_Email" class="floating-box">Email:</label>
+        </span>
+                    <input id="id_Email" maxlength="255"
+                           name="Email" type="text" value="" />
+                    <span class="helptext">Email</span>
+                </div>
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <label for="id_CellPhone" class="floating-box">Cell Phone:</label>
+        </span>
+                    <input id="id_CellPhone" maxlength="255"
+                           name="CellPhone" type="text" value="" />
+                    <span class="helptext">Cell Phone</span>
+                </div>
+
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <label for="id_Street" class="floating-box">Street:</label>
+        </span>
+                    <input id="id_Street" maxlength="255"
+                           name="Street" type="text" value="" />
+                    <span class="helptext">Street</span>
+                </div>
+
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <label for="id_City" class="floating-box">City:</label>
+        </span>
+                    <input id="id_Street" maxlength="255"
+                           name="City" type="text" value="" />
+                    <span class="helptext">City</span>
+                </div>
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <label for="id_State" class="floating-box">State:</label>
+        </span>
+                    <input id="id_Street" maxlength="255"
+                           name="State" type="text" value="" />
+                    <span class="helptext">State</span>
+                </div>
+                <div style="margin-top:10px">
+
+        <span class="right20percent">
+            <label for="id_Zip" class="floating-box">Zip:</label>
+        </span>
+                    <input id="id_Street" maxlength="255"
+                           name="Zip" type="text" value="" />
+                    <span class="helptext">Zip</span>
+                </div>
+
+
+                <div style="margin-top:10px">
+                <span class="right20percent">
+            <label for="id_file" class="floating-box">
+                Picture URL:
+            </label>
+        </span>
+                <input id="id_file"
+                       name="file" type="file" placeholder="Picture/scanned image here" required/>
+                <span class="helptext">Choose a picture of your own.
+        </span>
+
+
+        </div>
+
+
+                <div style="margin-top:10px">
+        <span class="right20percent">
+            <input type="submit" value="Create" />
+        </span>
+                </div>
+
+            </form>
+
+            <div style="margin-top:10px">
+        <span class="right20percent">
+            <a class="text-center btn btn-primary"
+               href="/">
+                Back to the main page</a>
+        </span>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+
+</div>
+
+<script src="/static/bootstrap3.3.6/js/jquery-2.2.4.min.js">
+</script>
+<script src="/static/bootstrap3.3.6/js/bootstrap.min.js">
+</script>
+
+</body>
