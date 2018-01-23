@@ -51,7 +51,7 @@ type Member struct {
 	City string
 	State string
 	Zip string
-	DistanceFromChurch  float32
+	ShortPixName string
 	PictureURL string
 }
 
@@ -62,7 +62,7 @@ func checkErr(err error) {
 	}
 }
 
-func uploadAFile(c *gin.Context) (string, error) {
+func uploadAFile(c *gin.Context) (string, string, error) {
 		// single file
 		file, _ := c.FormFile("file")
 		log.Println("The file name is: ", file.Filename)
@@ -115,7 +115,7 @@ func uploadAFile(c *gin.Context) (string, error) {
 		if errOpen != nil {
 			log.Fatalf("failed to open file %q, %v",
 				file.Filename, errOpen)
-			return "", errors.New("Failed to open file " +
+			return "", "", errors.New("Failed to open file " +
 				file.Filename + errOpen.Error())
 
 		}
@@ -167,7 +167,7 @@ func uploadAFile(c *gin.Context) (string, error) {
 
 
 	if contentType == "NotAcceptable" {
-		return "", errors.New("math: square root of negative number")
+		return "", "", errors.New("The file type is not acceptable.")
 
 	}
 
@@ -187,18 +187,18 @@ func uploadAFile(c *gin.Context) (string, error) {
 				// If the SDK can determine the request or retry delay was canceled
 				// by a context the CanceledErrorCode error code will be returned.
 				log.Fatalf("upload canceled due to timeout, %v\n", err)
-				return "", errors.New("Upload cancelled due to timeout, " +
+				return "", "", errors.New("Upload cancelled due to timeout, " +
 					err.Error())
 			} else {
 				log.Fatalf("failed to upload object, %v\n", err)
-				return "", errors.New("failed to upload object, " +
+				return "", "", errors.New("failed to upload object, " +
 					err.Error())
 			}
 		}
 		log.Printf("successfully uploaded file to %s %s\n",
 			bucket, keyString)
 
-		return bucketPrefix + keyString, nil
+		return key, bucketPrefix + keyString, nil
 		}
 
 func main() {
@@ -270,7 +270,7 @@ func main() {
 		Zip := c.PostForm("Zip")
 
 		//calling uploadAFile to upload it.
-		returnedFile, err := uploadAFile(c)
+		shortPixName, returnedFile, err := uploadAFile(c)
 
 		if err != nil {
 			log.Println("Upload an image file encounters a problem.")
@@ -283,10 +283,10 @@ func main() {
 		_, errInsert := db.
 		Exec("INSERT INTO members(ChineseName, EnglishName, " +
 			"Email, CellPhone, Street, City, State, Zip, " +
-				"PictureURL) VALUES " +
-					"($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+				"ShortPixName, PictureURL) VALUES " +
+					"($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
 			ChineseName, EnglishName, Email, CellPhone,
-				Street, City, State, Zip, returnedFile)
+				Street, City, State, Zip, shortPixName, returnedFile)
 
 		if errInsert != nil {
 			log.Println("DB Insertion is in error.")
@@ -302,18 +302,7 @@ func main() {
 			}
 			defer rows.Close()
 
-			members := make([]*Member, 0)
-			for rows.Next() {
-				member := new(Member)
-				err := rows.Scan(&member.ID, &member.ChineseName, &member.EnglishName,
-					&member.Email, &member.CellPhone,
-				&member.Street, &member.City,
-				&member.State, &member.Zip, &member.PictureURL)
-				if err != nil {
-					log.Fatal(err)
-				}
-				members = append(members, member)
-			}
+
 			c.HTML(http.StatusOK, "members.create_ok.tmpl.html", nil)
 		}
 	})
@@ -323,7 +312,7 @@ func main() {
 
 		rows, err := db.Query("SELECT ID, ChineseName, EnglishName, " +
 			"Email, CellPhone, Street, City, State, zip, " +
-			"DistanceFromChurch, PictureURL FROM members where ID = $1", id)
+			"ShortPixName, PictureURL FROM members where ID = $1", id)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -336,12 +325,10 @@ func main() {
 				&member.Email, &member.CellPhone,
 				&member.Street, &member.City,
 				&member.State, &member.Zip,
-				&member.DistanceFromChurch, &member.PictureURL)
+				&member.ShortPixName, &member.PictureURL)
 			if err != nil {
 				log.Fatal(err)
 			}
-			// need to trim it
-			//member.ID = strings.TrimSpace(member.ID)
 		}
 		c.HTML(http.StatusOK, "members.update.tmpl.html", member)
 
@@ -434,7 +421,7 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 		rows, err := db.Query("SELECT ID, ChineseName, " +
-			"EnglishName, Email, CellPhone, DistanceFromChurch, " +
+			"EnglishName, Email, CellPhone, ShortPixName, " +
 				" PictureURL FROM Members order by ID DESC")
 		if err != nil {
 			log.Fatal(err)
@@ -445,7 +432,7 @@ func main() {
 			member := new(Member)
 			err := rows.Scan(&member.ID, &member.ChineseName, &member.EnglishName,
 				&member.Email, &member.CellPhone,
-					&member.DistanceFromChurch, &member.PictureURL)
+					&member.ShortPixName, &member.PictureURL)
 			if err != nil {
 				log.Fatal(err)
 			}
