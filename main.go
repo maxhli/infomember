@@ -38,8 +38,17 @@ import (
 	"strconv"
 	"github.com/satori/go.uuid"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
+type User struct {
+	ID int
+	Username string
+	FirstName string
+	LastName string
+	Email string
+	Password string
+}
 
 type Member struct {
 	ID   int
@@ -201,6 +210,79 @@ func uploadAFile(c *gin.Context) (string, string, error) {
 		return key, bucketPrefix + keyString, nil
 		}
 
+func getPwd() []byte {
+	// Prompt the user to enter a password
+	fmt.Println("Enter a password:")
+	// We will use this to store the users input
+	var pwd string
+	// Read the users input
+	_, err := fmt.Scan(&pwd)
+	if err != nil {
+		log.Println(err)
+	}
+	// Return the users input as a byte slice which will save us
+	// from having to do this conversion later on
+	return []byte(pwd)
+}
+
+func hashAndSalt(pwd []byte) string {
+
+	// Use GenerateFromPassword to hash & salt pwd
+	// MinCost is just an integer constant provided by the bcrypt
+	// package along with DefaultCost & MaxCost.
+	// The cost can be any value you want provided it isn't lower
+	// than the MinCost (4)
+	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
+	if err != nil {
+		log.Println(err)
+	}
+	// GenerateFromPassword returns a byte slice so we need to
+	// convert the bytes to a string and return it
+	return string(hash)
+}
+
+func comparePasswords(hashedPwd string, plainPwd []byte) bool {
+	// Since we'll be getting the hashed password from the DB it
+	// will be a string so we'll need to convert it to a byte slice
+	byteHash := []byte(hashedPwd)
+	err := bcrypt.CompareHashAndPassword(byteHash, plainPwd)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	return true
+}
+
+func doesUsernameExist (db *sql.DB, username string) bool {
+	userRows, errSelect := db.Query(
+		"select username from users " +
+			"where username = $1", username)
+
+	if errSelect != nil {
+		log.Println("Selection password hash from users table is NOT successful.")
+		return false
+	} else {
+		user1 := new(User)
+		defer userRows.Close()
+		hasData := false
+		for userRows.Next() {
+			hasData = true
+			err := userRows.Scan(&user1.Username)
+			if err != nil {
+				log.Fatal(err)
+				return false
+			}
+		}
+		if hasData {
+			return true
+		} else {
+			return false
+		}
+
+	}
+}
+
 func main() {
 
 	var DATABASE_URL = os.Getenv("DATABASE_URL")
@@ -209,7 +291,7 @@ func main() {
 	defer db.Close()
 
 	if errDB != nil {
-		log.Fatalf("Error connecting to the DB")
+		log.Fatalf("Error connecting to the DB.")
 	} else {
 		log.Println("Connection is successful!")
 	}
@@ -417,6 +499,105 @@ func main() {
 
 		c.HTML(http.StatusOK, "members.delete_post.tmpl.html", ID)
 
+	})
+
+	router.GET("/accounts/create", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accounts.create.tmpl.html", nil)
+	})
+
+	router.POST("/accounts/create", func(c *gin.Context) {
+		username := c.PostForm("username")
+		firstName := c.PostForm("first_name")
+		lastName := c.PostForm("last_name")
+		email := c.PostForm("email")
+		password1 := c.PostForm("password1")
+		password2 := c.PostForm("password2")
+
+		log.Println("username is: ", username, "first_name is: ", firstName,
+			"lastName is: ", lastName, "password1 is: ", password1,
+			"password2 is: ", password2)
+
+		if doesUsernameExist(db, username) {
+			emsg := "Username already exists. Please choose another one."
+			log.Println(emsg)
+			c.HTML(http.StatusOK,
+				"accounts.create_error.tmpl.html", emsg)
+		} else {
+			_, errInsert := db.
+				Exec("INSERT INTO users(username, firstname, lastname, email,"+
+				"password) VALUES "+
+				"($1, $2, $3, $4, $5)",
+				username, firstName, lastName, email,
+				hashAndSalt([]byte(password1)))
+
+			if errInsert != nil {
+				log.Println("DB Insertion is in error.")
+				c.HTML(http.StatusOK,
+					"accounts.create_error.tmpl.html", errInsert)
+			} else {
+				log.Println("DB Insertion successful.")
+				c.HTML(http.StatusOK, "accounts.create_ok.tmpl.html", nil)
+			}
+	    }
+	})
+
+
+	router.GET("/accounts/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accounts.login.tmpl.html", nil)
+	})
+
+	router.POST("/accounts/login", func(c *gin.Context) {
+		username := c.PostForm("username")
+		enteredPWD := c.PostForm("password")
+
+		log.Println("username is: ", username,
+			"password is: ", enteredPWD)
+
+		userRows, errSelect := db.Query(
+			"select ID, username, password from users " +
+			"where username = $1", username)
+
+		if errSelect != nil {
+			log.Println("Selection password hash from users table is NOT successful.")
+			c.HTML(http.StatusOK,
+				"accounts.login_error.tmpl.html", errSelect)
+		} else {
+
+			user1 := new(User)
+
+			defer userRows.Close()
+
+			hasData := false
+			for userRows.Next() {
+				hasData = true
+				err := userRows.Scan(&user1.ID, &user1.Username, &user1.Password)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			if hasData {
+				log.Println("Got data from DB table.")
+				if comparePasswords(user1.Password, []byte(enteredPWD)) {
+					log.Println("Login sucessful!")
+					infoMsg := "Login sucessful!"
+					c.HTML(http.StatusOK,
+						"accounts.login_ok.tmpl.html", infoMsg)
+
+				} else {
+					log.Println("Login NOT successful!")
+					emsg := "The password is not correct."
+					c.HTML(http.StatusOK,
+						"accounts.login_error.tmpl.html", emsg)
+				}
+			} else {
+				log.Println("NO data from DB table.")
+				emsg := "The username is not found."
+				c.HTML(http.StatusOK,
+					"accounts.login_error.tmpl.html", emsg)
+			}
+
+		}
 	})
 
 	router.GET("/", func(c *gin.Context) {

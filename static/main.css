@@ -33,3 +33,9 @@
     width: 8em;
     text-align: right;
 }
+
+.right20percent {
+  display: inline-block;
+  width: 20%;
+  text-align:right;
+}
