@@ -8,6 +8,8 @@ import (
 
 	_ "github.com/satori/go.uuid"
 
+	"github.com/gorilla/sessions"
+
 	"database/sql"
 
 	_ "github.com/lib/pq"
@@ -39,6 +41,7 @@ import (
 	"github.com/satori/go.uuid"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	_ "net/smtp"
 )
 
 type User struct {
@@ -63,7 +66,49 @@ type Member struct {
 	ShortPixName string
 	PictureURL string
 }
+var (
+	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
+	key = []byte("THE-KEY-has-to-be-32-bytes-long!")
+	store = sessions.NewCookieStore(key)
+)
+func isAuth(c *gin.Context) (bool, string) {
+	session1, _ := store.Get(
+		c.Request, "infomember-cookie")
+	auth, ok := session1.Values["authenticated"].(bool)
+	// Check if user is authenticated
+	if !ok || !auth {
+		return false, ""
+	} else {
+		return true, session1.Values["username"].(string)
+	}
+}
+func checkAuth(c *gin.Context) {
+	session1, _ := store.Get(
+		c.Request, "infomember-cookie")
+	// Check if user is authenticated
+	if auth, ok := session1.Values["authenticated"].
+	(bool); !ok || !auth {
+		http.Error(c.Writer, "Forbidden",
+			http.StatusForbidden)
+		return
+	}
+}
 
+func secret(w http.ResponseWriter, r *http.Request) {
+	session1, _ := store.Get(
+		r, "infomember-cookie")
+
+	// Check if user is authenticated
+	if auth, ok := session1.Values["authenticated"].
+		(bool); !ok || !auth {
+		http.Error(w, "Forbidden",
+			http.StatusForbidden)
+		return
+	}
+
+	// Print secret message
+	fmt.Fprintln(w, "In a secret area.")
+}
 
 func checkErr(err error) {
 	if err != nil {
@@ -97,7 +142,7 @@ func uploadAFile(c *gin.Context) (string, string, error) {
 			log.Fatal(errCred)
 		}
 
-	session := session.Must(session.NewSession(
+	sessionAWS := session.Must(session.NewSession(
 			&aws.Config{
 				Region:      aws.String(endpoints.UsEast2RegionID),
 				Credentials: creds,
@@ -106,7 +151,7 @@ func uploadAFile(c *gin.Context) (string, string, error) {
 		// Optional aws.Config values can also be provided as variadic arguments
 		// to the New function. This option allows you to provide service
 		// specific configuration.
-		svc := s3.New(session)
+		svc := s3.New(sessionAWS)
 
 		// Create a context with a timeout that will abort the upload if it takes
 		// more than the passed in timeout.
@@ -299,7 +344,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		log.Fatal("$PORT must be set")
+		log.Fatal("PORT must be set")
 	}
 
 	router := gin.New()
@@ -309,10 +354,17 @@ func main() {
 
 
 	router.GET("/members/create", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "members.create.tmpl.html", nil)
+		// checkAuth(c)
+		authenticated, username := isAuth(c)
+		if !authenticated {
+			c.String(http.StatusOK, "You need to login at first." + username)
+		}else {
+			c.HTML(http.StatusOK, "members.create.tmpl.html", username)
+		}
 	})
 
 	router.GET("/members/select/:id", func(c *gin.Context) {
+		checkAuth(c)
 
 		id := c.Param("id")
 
@@ -342,6 +394,7 @@ func main() {
 	})
 
 	router.POST("/members/create", func(c *gin.Context) {
+		checkAuth(c)
 		EnglishName := c.PostForm("EnglishName")
 		ChineseName := c.PostForm("ChineseName")
 		Email := c.PostForm("Email")
@@ -392,6 +445,7 @@ func main() {
 	router.GET("/members/update/:id", func(c *gin.Context) {
 		id := c.Param("id")
 
+
 		rows, err := db.Query("SELECT ID, ChineseName, EnglishName, " +
 			"Email, CellPhone, Street, City, State, zip, " +
 			"ShortPixName, PictureURL FROM members where ID = $1", id)
@@ -417,6 +471,7 @@ func main() {
 	})
 
 	router.POST("/members/update/:id", func(c *gin.Context) {
+		checkAuth(c)
 		ID := c.Param("id")
 
 		IDNumber, err1 := strconv.Atoi(ID)
@@ -480,6 +535,7 @@ func main() {
 	})
 
 	router.POST("/members/delete/:id", func(c *gin.Context) {
+		checkAuth(c)
 		ID := c.Param("id")
 
 		// Update
@@ -501,11 +557,14 @@ func main() {
 
 	})
 
-	router.GET("/accounts/create", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "accounts.create.tmpl.html", nil)
+	router.GET("/accounts/create",
+		func(c *gin.Context) {
+			c.HTML(http.StatusOK,
+				"accounts.create.tmpl.html", nil)
 	})
 
 	router.POST("/accounts/create", func(c *gin.Context) {
+		checkAuth(c)
 		username := c.PostForm("username")
 		firstName := c.PostForm("first_name")
 		lastName := c.PostForm("last_name")
@@ -541,6 +600,20 @@ func main() {
 	    }
 	})
 
+	router.GET("/accounts/logout", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "accounts.logout.tmpl.html", nil)
+	})
+
+	router.POST("/accounts/logout", func(c *gin.Context) {
+		log.Println("log out!!!")
+		session1, _ := store.Get(
+			c.Request, "infomember-cookie")
+
+		// Revoke users authentication
+		session1.Values["authenticated"] = false
+		session1.Save(c.Request, c.Writer)
+		c.Redirect(http.StatusFound, "/")
+	})
 
 	router.GET("/accounts/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "accounts.login.tmpl.html", nil)
@@ -581,6 +654,11 @@ func main() {
 				if comparePasswords(user1.Password, []byte(enteredPWD)) {
 					log.Println("Login sucessful!")
 					infoMsg := "Login sucessful!"
+					session1, _ := store.Get(
+						c.Request, "infomember-cookie")
+					session1.Values["authenticated"] = true
+					session1.Values["username"] = user1.Username
+					session1.Save(c.Request, c.Writer)
 					c.HTML(http.StatusOK,
 						"accounts.login_ok.tmpl.html", infoMsg)
 
@@ -600,26 +678,42 @@ func main() {
 		}
 	})
 
+	//router.GET("/", func(c *gin.Context) {
+	//	c.HTML(http.StatusOK, "index.tmpl.html", nil)
+	//
+	//})
+
 	router.GET("/", func(c *gin.Context) {
-		rows, err := db.Query("SELECT ID, ChineseName, " +
-			"EnglishName, Email, CellPhone, ShortPixName, " +
-				" PictureURL FROM Members order by ID DESC")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer rows.Close()
-		members := make([]*Member, 0)
-		for rows.Next() {
-			member := new(Member)
-			err := rows.Scan(&member.ID, &member.ChineseName, &member.EnglishName,
-				&member.Email, &member.CellPhone,
-					&member.ShortPixName, &member.PictureURL)
+		authenticated, username := isAuth(c)
+		if !authenticated {
+			c.HTML(http.StatusOK, "index.tmpl.html",
+				gin.H{"Anonymous": true, "Authenticated": false,
+				"Username": ""})
+		} else {
+			rows, err := db.Query("SELECT ID, ChineseName, " +
+				"EnglishName, Email, CellPhone, ShortPixName, " +
+					" PictureURL FROM Members order by ID DESC")
 			if err != nil {
 				log.Fatal(err)
 			}
-			members = append(members, member)
+			defer rows.Close()
+			members := make([]*Member, 0)
+			for rows.Next() {
+				member := new(Member)
+				err := rows.Scan(&member.ID, &member.ChineseName,
+					&member.EnglishName,
+					&member.Email, &member.CellPhone,
+						&member.ShortPixName, &member.PictureURL)
+				if err != nil {
+					log.Fatal(err)
+				}
+				members = append(members, member)
+			}
+			c.HTML(http.StatusOK, "index_protected.tmpl.html",
+				gin.H{"Anonymous": false, "Authenticated": true,
+				"Username": username, "Members": members})
+
 		}
-		c.HTML(http.StatusOK, "index.tmpl.html", members)
 
 	})
 

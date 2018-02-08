@@ -31,16 +31,33 @@
     </ul>
       <ul class="nav navbar-nav pull-right">
 
+          {{ if .Anonymous}}
           <li>
               <a id=""
                  class="fontsize125p navbar-onlinetraces"
                  href="/accounts/create/">Sign Up</a>
           </li>
           <li>
-              <a id=""
-                 class="fontsize125p navbar-onlinetraces"
-                 href="/accounts/login/">Login</a>
-          </li>
+          <a id=""
+             class="fontsize125p navbar-onlinetraces"
+             href="/accounts/login/">Login</a>
+      </li>
+
+       {{end }}
+
+        {{ if .Authenticated}}
+
+        <li>
+            <a style="font-size:200%; color:red;"
+               href="#">{{.Username}}</a>
+        </li>
+            <li>
+                <a id=""
+                   class="fontsize125p navbar-onlinetraces"
+                   href="/accounts/logout/">Logout</a>
+            </li>
+
+        {{end}}
 
       </ul>
   </div>

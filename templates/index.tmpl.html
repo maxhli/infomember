@@ -1,7 +1,7 @@
 <html>
   {{template "header.tmpl.html"}}
 <body>
-  {{template "nav.tmpl.html"}}
+  {{template "nav.tmpl.html" . }}
 
 
 
@@ -19,91 +19,11 @@
 
   <div class="container-fluid">
 <div class="text-center" style="padding-bottom: 10px">
-      <a class="btn btn-success btn-lg" href="/members/create">Add a New Member</a>
-</div>
+<h1>
+    You need to login in order to view member information.
+</h1></div>
 
-  <table class="table table-responsive table-striped
-      table-bordered table-hover table-condensed">
 
-      <thead>
-      <tr >
-          <th class="text-center">
-              ID
-          </th>
-          <th class="text-center">
-              中文名字/Chinese Name
-          </th>
-          <th class="text-center">
-              English Name
-          </th>
-          <th class="text-center">
-              Email
-          </th>
-          <th class="text-center">
-              Cell Phone
-          </th>
-          <th class="text-center">
-              Small Picture
-          </th>
-          <th class="text-center">
-              Full Size Picture
-          </th>
-          <th class="text-center">
-              Actions
-          </th>
-
-      </tr>
-      </thead>
-
-      {{range .}}
-    <tr>
-      <td>
-        {{.ID}}
-      </td>
-      <td>
-        {{.ChineseName}}
-      </td>
-      <td>
-        {{.EnglishName}}
-      </td>
-        <td>
-        {{.Email}}
-        </td>
-        <td>
-        {{.CellPhone}}
-        </td>
-        <td>
-            <img src="{{.PictureURL}}" width="150px" />
-        </td>
-        <td>
-            <a href="{{.PictureURL}}" target="_blank">
-            {{.ShortPixName}}
-            </a>
-        </td>
-        <td class="text-center">
-            <a class ="btn btn-primary"
-               href="/members/select/{{.ID}}">
-                <i class="icon-lg ion-more"
-                   title="More...">
-                </i></a>
-            <a class ="btn btn-warning"
-               href="/members/update/{{.ID}}">
-                <i class="icon-lg ion-edit"
-                   title="Edit">
-                </i>
-            </a>
-            <a class ="btn btn-danger"
-               href="/members/delete/{{.ID}}">
-                <i class="icon-lg ion-close-round"
-                   title="Delete">
-                </i>
-            </a>
-        </td>
-
-    </tr>
-  {{end }}
-
-  </table>
 </div>
 
 
