@@ -4,6 +4,11 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "G84MBWp6UKzE2FRKtnacSwSyWXE=",
+			"path": "crypto",
+			"revision": ""
+		},
+		{
 			"checksumSHA1": "2lZhCDBXhOSn5K4VIAflSyY9ZEc=",
 			"path": "github.com/aws/aws-sdk-go/aws",
 			"revision": "44376742d0a0cb0a97c3e472b00fad8d350af166",

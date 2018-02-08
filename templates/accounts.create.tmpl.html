@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>onlinetraces.com. Online Traces. website, username, password, monthly charge
+    </title>
+
+    <meta name="keywords" content=
+            "new trace manager, hint, trace hint, trace, username, website name, trace manager"
+    />
+    <meta name="description" content=
+            "onlinetraces.com. Online Traces. website, username, password, monthly charge">
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css"
+          rel="stylesheet" media="screen">
+
+
+    <link href="/static/main.css"
+          rel="stylesheet" media="screen">
+    <link rel="stylesheet"
+          href=
+                  "//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    >
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <h1>Create an account</h1>
+
+            <form>
+
+
+                <div>
+          <span class="right20percent">
+              <label for="id_username">
+                  Username:
+              </label>
+          </span>
+                    <input autofocus=""
+                           id="id_username"
+                           maxlength="150"
+                           name="username"
+                           type="text" required />
+                    <span class="helptext">
+              Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
+          </span>
+                </div>
+                <div>
+          <span class="right20percent">
+              <label for="id_email">
+                  Email:
+              </label>
+          </span>
+                    <input id="id_email"
+                           name="email"
+                           type="email"
+                           required />
+                    <span class="helptext">
+              Required. A valid email address
+          </span>
+                </div>
+                <div>
+          <span class="right20percent">
+              <label for="id_first_name">
+                  First name:
+              </label>
+          </span>
+
+                    <input id="id_first_name"
+                           maxlength="30"
+                           name="first_name"
+                           type="text" />
+                    <span class="helptext">
+              Optional. Max # of characters: 30
+          </span>
+                </div>
+                <div>
+          <span class="right20percent">
+              <label for="id_last_name">
+                  Last name:
+              </label>
+          </span>
+                    <input id="id_last_name"
+                           maxlength="30"
+                           name="last_name"
+                           type="text" />
+                    <span class="helptext">
+              Optional. Max # of characters: 30
+          </span>
+                </div>
+                <div>
+          <span class="right20percent">
+              <label for="id_password1">
+                  Password:
+              </label>
+          </span>
+                    <input id="id_password1"
+                           name="password1"
+                           type="password" required />
+
+                    <span class="helptext">
+                        Simple Rules:
+          </span>
+                </div>
+                <div>
+          <span class="right20percent">
+              <label for="id_password2">
+                  Password Confirmation:
+              </label>
+          </span>
+                    <input id="id_password2"
+                           name="password2"
+                           type="password" required />
+                    <span class="helptext">
+              Enter the same password as before, for verification.
+          </span>
+                </div>
+
+
+                <div style="padding:5px">
+          <span class="right20percent">
+              <input class = "btn btn-primary text-center"
+                     type="submit" formmethod="post" formaction="/accounts/create"
+                     value="Create an account">
+          </span>
+                </div>
+                <div style="padding:5px">
+          <span class="right20percent">
+            <a class = "btn btn-success text-center"
+               href="/">
+                Back to the Main Page
+            </a>
+          </span>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+
+            <hr>
+            <p>
+                <a href="/contac-us/">Contact Us</a> |
+                <a href="/about-us/">About Us</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<script src="/static/bootstrap3.3.6/js/jquery-2.2.4.min.js">
+</script>
+<script src="/static/bootstrap3.3.6/js/bootstrap.min.js">
+</script>
+
+</body>
+
+</html>
