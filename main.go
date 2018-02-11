@@ -564,7 +564,6 @@ func main() {
 	})
 
 	router.POST("/accounts/create", func(c *gin.Context) {
-		checkAuth(c)
 		username := c.PostForm("username")
 		firstName := c.PostForm("first_name")
 		lastName := c.PostForm("last_name")
