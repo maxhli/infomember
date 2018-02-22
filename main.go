@@ -42,7 +42,6 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	_ "net/smtp"
-	_ "github.com/qor/roles"
 )
 
 type User struct {
