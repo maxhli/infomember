@@ -86,18 +86,41 @@
                 <i class="icon-lg ion-more"
                    title="More...">
                 </i></a>
+
+            {{ if .Disabled}}
+            <a class ="btn btn-warning disabled"
+               href="/members/update/{{.ID}}">
+                <i class="icon-lg ion-edit"
+                   title="Edit">
+                </i>
+            </a>
+            {{ end }}
+
+        {{ if not .Disabled}}
             <a class ="btn btn-warning"
                href="/members/update/{{.ID}}">
                 <i class="icon-lg ion-edit"
                    title="Edit">
                 </i>
             </a>
-            <a class ="btn btn-danger"
+        {{ end }}
+
+            {{ if .Disabled }}
+            <a class ="btn btn-danger disabled"
                href="/members/delete/{{.ID}}">
                 <i class="icon-lg ion-close-round"
                    title="Delete">
                 </i>
             </a>
+            {{ end }}
+            {{ if not .Disabled}}
+                <a class ="btn btn-danger"
+                   href="/members/delete/{{.ID}}">
+                    <i class="icon-lg ion-close-round"
+                       title="Delete">
+                    </i>
+                </a>
+            {{end }}
         </td>
 
     </tr>

@@ -42,6 +42,7 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	_ "net/smtp"
+	_ "github.com/qor/roles"
 )
 
 type User struct {
@@ -65,6 +66,8 @@ type Member struct {
 	Zip string
 	ShortPixName string
 	PictureURL string
+	Disabled bool
+	UsernameAsOwner string
 }
 var (
 	// key must be 16, 24 or 32 bytes long (AES-128, AES-192 or AES-256)
@@ -299,6 +302,35 @@ func comparePasswords(hashedPwd string, plainPwd []byte) bool {
 	return true
 }
 
+func doesPermissionCodeExist (db *sql.DB, email string,
+	permissioncode string) bool {
+	userRows, errSelect := db.Query(
+		"select count(*) from emailpermissioncodes " +
+			"where email = $1 and permissioncode = $2",
+			email, permissioncode)
+
+	if errSelect != nil {
+		log.Println("Selection from emailpermissioncodes " +
+			" table is NOT successful.")
+		return false
+	} else {
+		var ret int = 0
+		for userRows.Next() {
+			err := userRows.Scan(&ret)
+			if err != nil {
+				log.Fatal(err)
+				return false
+			}
+		}
+		if ret == 1 {
+			return true
+		} else {
+			return false
+		}
+
+	}
+}
+
 func doesUsernameExist (db *sql.DB, username string) bool {
 	userRows, errSelect := db.Query(
 		"select username from users " +
@@ -395,6 +427,11 @@ func main() {
 
 	router.POST("/members/create", func(c *gin.Context) {
 		checkAuth(c)
+
+		session1, _ := store.Get(
+			c.Request, "infomember-cookie")
+		username, _ := session1.Values["username"].(string)
+
 		EnglishName := c.PostForm("EnglishName")
 		ChineseName := c.PostForm("ChineseName")
 		Email := c.PostForm("Email")
@@ -418,10 +455,11 @@ func main() {
 		_, errInsert := db.
 		Exec("INSERT INTO members(ChineseName, EnglishName, " +
 			"Email, CellPhone, Street, City, State, Zip, " +
-				"ShortPixName, PictureURL) VALUES " +
-					"($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+				"ShortPixName, PictureURL, UsernameAsOwner) VALUES " +
+					"($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
 			ChineseName, EnglishName, Email, CellPhone,
-				Street, City, State, Zip, shortPixName, returnedFile)
+				Street, City, State, Zip,
+					shortPixName, returnedFile, username)
 
 		if errInsert != nil {
 			log.Println("DB Insertion is in error.")
@@ -473,6 +511,7 @@ func main() {
 	router.POST("/members/update/:id", func(c *gin.Context) {
 		checkAuth(c)
 		ID := c.Param("id")
+
 
 		IDNumber, err1 := strconv.Atoi(ID)
 		checkErr(err1)
@@ -570,12 +609,21 @@ func main() {
 		email := c.PostForm("email")
 		password1 := c.PostForm("password1")
 		password2 := c.PostForm("password2")
+		permissioncode := c.PostForm("permissioncode")
 
 		log.Println("username is: ", username, "first_name is: ", firstName,
 			"lastName is: ", lastName, "password1 is: ", password1,
-			"password2 is: ", password2)
+			"password2 is: ", password2,
+				"permissioncode is: ", permissioncode)
 
-		if doesUsernameExist(db, username) {
+
+		if !doesPermissionCodeExist(db, email, permissioncode) {
+			emsg := "Permission code is wrong. Please contact " +
+				" the system administrator."
+			log.Println(emsg)
+			c.HTML(http.StatusOK,
+				"accounts.create_error.tmpl.html", emsg)
+		} else if doesUsernameExist(db, username) {
 			emsg := "Username already exists. Please choose another one."
 			log.Println(emsg)
 			c.HTML(http.StatusOK,
@@ -691,7 +739,8 @@ func main() {
 		} else {
 			rows, err := db.Query("SELECT ID, ChineseName, " +
 				"EnglishName, Email, CellPhone, ShortPixName, " +
-					" PictureURL FROM Members order by ID DESC")
+					" PictureURL, UsernameAsOwner " +
+						" FROM Members order by ID DESC")
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -702,11 +751,19 @@ func main() {
 				err := rows.Scan(&member.ID, &member.ChineseName,
 					&member.EnglishName,
 					&member.Email, &member.CellPhone,
-						&member.ShortPixName, &member.PictureURL)
+						&member.ShortPixName, &member.PictureURL,
+							&member.UsernameAsOwner)
 				if err != nil {
 					log.Fatal(err)
 				}
 				members = append(members, member)
+			}
+			for _, m := range members {
+				if m.UsernameAsOwner == username {
+					m.Disabled = false
+				} else {
+					m.Disabled = true
+				}
 			}
 			c.HTML(http.StatusOK, "index_protected.tmpl.html",
 				gin.H{"Anonymous": false, "Authenticated": true,
